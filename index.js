@@ -49,10 +49,10 @@ app.get("/game/:id", (req, res) => {
   } else {
 
     var id = parseInt(req.params.id);
-    var game = DB.games.find(game=>game.id == id)
+    var game = DB.games.find(game => game.id == id)
 
     if (game != undefined) {
-      res.statusCode= 200;
+      res.statusCode = 200;
       res.json(game);
     } else {
       res.sendStatus(404);
@@ -60,41 +60,72 @@ app.get("/game/:id", (req, res) => {
   }
 });
 
-app.post("/game",(req,res)=>{
-  const {title, price, year} = req.body
+app.post("/game", (req, res) => {
+  const { title, price, year } = req.body
   if (price == null || isNaN(price) || year == null || isNaN(year)) {
-   return res.sendStatus(400);
+    return res.sendStatus(400);
   }
 
-  if( title == "") {
+  if (title == "") {
     return res.sendStatus(400)
   }
 
-    DB.games.push({
-     id: Date.now(),
-     title,
-     price,
-     year
-    })
-  
+  DB.games.push({
+    id: Date.now(),
+    title,
+    price,
+    year
+  })
+
 
   res.sendStatus(200);
 });
 
-  app.delete("/game/:id",(req,res)=>{
-    if (isNaN(req.params.id)) {
-        res.sendStatus(400)
-    } else {
-      var id = parseInt(req.params.id)
-      var index = DB.games.findIndex(g => g.id == id);
+app.delete("/game/:id", (req, res) => {
+  if (isNaN(req.params.id)) {
+    res.sendStatus(400)
+  } else {
+    var id = parseInt(req.params.id)
+    var index = DB.games.findIndex(g => g.id == id);
 
-      if (index == -1) {
-        res.sendStatus(404)
-      } else {
-        DB.games.splice(index,1)
-        res.sendStatus(200)
-      }
+    if (index == -1) {
+      res.sendStatus(404)
+    } else {
+      DB.games.splice(index, 1)
+      res.sendStatus(200)
     }
-  });
+  }
+});
+
+app.put("/game/:id", (req, res) => {
+  if (isNaN(req.params.id)) {
+    res.sendStatus(400)
+  } else {
+
+    var id = parseInt(req.params.id) 
+
+    var game = DB.games.find(g => g.id == id);
+
+    if (game != undefined) {
+      var { title, price, year } = req.body;
+
+      if (title != undefined) {
+        game.title = title;
+      }
+
+      if (price != undefined) {
+        game.price = price;
+      }
+
+      if (year != undefined) {
+        game.year = year;
+      }
+
+      res.sendStatus(200)
+    } else {
+      res.sendStatus(404)
+    }
+  }
+})
 
 app.listen(777, () => { console.log("API rodando"); });
